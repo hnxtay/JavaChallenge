@@ -1,20 +1,11 @@
-public class Range {
-    private final int lowerBound;
-    private final int upperBound;
-    private static Range instance = null;
+public class Range<T extends Comparable<T>> {
+    private final T lowerBound;
+    private final T upperBound;
 
-    private ContainRange containRange = ContainRange.open;
+    private final ContainRange containRange;
 
-    private Range(int lowerBound, int upperBound) {
-        if (lowerBound > upperBound) {
-            throw new IllegalArgumentException("lowerBound value cannot be greater than upper value");
-        }
-        this.upperBound = upperBound;
-        this.lowerBound = lowerBound;
-    }
-
-    private Range(int lowerBound, int upperBound, ContainRange range) {
-        if (lowerBound > upperBound) {
+    private Range(T lowerBound, T upperBound, ContainRange range) {
+        if (lowerBound.compareTo(upperBound) > 0) {
             throw new IllegalArgumentException("lowerBound value cannot be greater than upper value");
         }
         this.upperBound = upperBound;
@@ -23,35 +14,33 @@ public class Range {
     }
 
 
-    public static Range of(int lowerBound, int upperBound) {
-        if (instance == null)
-            instance = new Range(lowerBound, upperBound);
-        return instance;
+    public static <T extends Comparable<T>> Range<T> of(T lowerBound, T upperBound, ContainRange range) {
+        return new Range<T>(lowerBound, upperBound, range);
     }
 
-    public boolean contains(int number) {
+    public boolean contains(T number) {
         return switch (containRange) {
-            case open -> number >= lowerBound && number <= upperBound;
-            case closed -> number > lowerBound && number < upperBound;
-            case openClosed -> number >= lowerBound && number < upperBound;
-            case closedOpen -> number > lowerBound && number <= upperBound;
+            case open -> number.compareTo(lowerBound) > 0 && number.compareTo(upperBound) < 0;
+            case closed -> number.compareTo(lowerBound) >= 0 && number.compareTo(upperBound) <= 0;
+            case openClosed -> number.compareTo(lowerBound) < 0 && number.compareTo(upperBound) >= 0;
+            case closedOpen -> number.compareTo(lowerBound) >= 0 && number.compareTo(upperBound) < 0;
         };
     }
 
-    public static Range open(int lowerBound, int upperBound) {
-        return new Range(lowerBound, upperBound, ContainRange.open);
+    public static <T extends Comparable<T>> Range<T> open(T lowerBound, T upperBound) {
+        return new Range<T>(lowerBound, upperBound, ContainRange.open);
     }
 
-    public static Range closed(int lowerBound, int upperBound) {
-        return new Range(lowerBound, upperBound, ContainRange.closed);
+    public static <T extends Comparable<T>> Range<T> closed(T lowerBound, T upperBound) {
+        return new Range<T>(lowerBound, upperBound, ContainRange.closed);
     }
 
-    public static Range openClosed(int lowerBound, int upperBound) {
-        return new Range(lowerBound, upperBound, ContainRange.openClosed);
+    public static <T extends Comparable<T>> Range<T> openClosed(T lowerBound, T upperBound) {
+        return new Range<T>(lowerBound, upperBound, ContainRange.openClosed);
     }
 
-    public static Range closedOpen(int lowerBound, int upperBound) {
-        return new Range(lowerBound, upperBound, ContainRange.closedOpen);
+    public static <T extends Comparable<T>> Range<T> closedOpen(T lowerBound, T upperBound) {
+        return new Range<T>(lowerBound, upperBound, ContainRange.closedOpen);
     }
 }
 
